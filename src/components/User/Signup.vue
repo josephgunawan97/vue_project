@@ -72,7 +72,11 @@ export default{
     },
   methods: {
     signUp () {
+      this.$toasted.show("Sign Up Success").goAway(1000)
+      let loader = this.$loading.show();
       this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
+      setTimeout(() => loader.hide(), 2 * 1000)
+      
     }
   }
 }

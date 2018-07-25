@@ -3,6 +3,10 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Loading from 'vue-loading-overlay'
+
+import 'vue-loading-overlay/dist/vue-loading.min.css'
+// Init plugin
 import {
   Vuetify,
   VApp,
@@ -24,6 +28,18 @@ import { store } from './store'
 import * as firebase from 'firebase'
 import '../node_modules/vuetify/src/stylus/app.styl'
 
+import VuejsDialog from 'vuejs-dialog'
+// include the default style
+import 'vuejs-dialog/dist/vuejs-dialog.min.css'
+import Toasted from 'vue-toasted'
+
+Vue.use(Toasted);
+
+// Tell Vue to install the plugin.
+
+Vue.use(VuejsDialog);
+
+Vue.use(Loading);
 Vue.use(Vuetify, {
   components: {
     VApp,

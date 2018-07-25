@@ -1,55 +1,135 @@
 <template>
       <v-container align-center>  
-        <v-layout align-center>
-          <v-flex xs2>
+        <v-btn flat @click.stop="dialogadd = !dialogadd">
+            <v-icon>add</v-icon> Add Product
+          </v-btn>
+
+    <v-dialog v-model="dialogadd" width="800px">
+      <v-card>
+        <v-card-title
+          class="grey lighten-4 py-4 title">
+          Add Product
+        </v-card-title>
+
+        <v-form>
+            <v-container grid-list-sm class="pa-4">
+              <v-layout row wrap>
+                <v-flex xs12 align-center justify-space-between>
+                  <v-layout align-center>
+                    <v-text-field
+                      placeholder="Product Name"
+                      name="name"
+                      id="name"
+                      v-model="name"
+                    ></v-text-field>
+                  </v-layout>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field
+                  prepend-icon="notes"
+                    placeholder="Category"
+                    name="category"
+                    id="category"
+                    v-model="category"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field
+                    type="Amount"
+                    prepend-icon="attach_money"
+                    placeholder="Price"
+                    name="price"
+                    id="price"
+                    v-model="price"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field
+                    type="Amount"
+                    prepend-icon="assignment_late"
+                    placeholder="Amount"
+                    name="amount"
+                    id="amount"
+                    v-model="amount"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field
+                    prepend-icon="details"
+                    placeholder="Description"
+                    name="description"
+                    id="description"
+                    v-model="description"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+           
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat color="primary" @click="dialogadd = false">Cancel</v-btn>
+            <v-btn flat @click="dialogadd = false"  v-on:click="createProduct()">Save</v-btn>
+          </v-card-actions>
+         </v-container>
+        </v-form>
+        </v-card>
+    </v-dialog> 
+
+        <table style="width:100%; text-align:center">
+          <thead>
+            <tr>
+
+          <th>
               Nama
-          </v-flex>
-          <v-flex xs2>
+          </th>
+          <th>
               Category
-          </v-flex>
-          <v-flex xs2>
+          </th>
+          <th>
               Price
-          </v-flex>
-          <v-flex xs2>
+          </th>
+          <th>
               Amount
-          </v-flex>
-          <v-flex xs2>
+          </th>
+          <th>
               Description
-          </v-flex>
-          <v-flex xs1>
+          </th>
+          <th>
               Edit
-          </v-flex>
-          <v-flex xs1 >
+          </th>
+          <th>
               Delete
-          </v-flex>
-        </v-layout>
-        <v-layout align-center v-for="product in productslist" :key="product[0]">
-          <v-flex xs2>
+          </th>
+            </tr>
+            </thead>
+          <tr v-for="product in productslist" :key="product[0]">
+          <td>
             <span >{{product[1].title}}</span>
-          </v-flex>
-          <v-flex xs2>
+          </td>
+          <td>
             <span >{{product[1].category}}</span>
-          </v-flex>
-          <v-flex xs2>
+          </td>
+          <td>
             <span >{{product[1].price}}</span>
-          </v-flex>
-          <v-flex xs2>
+          </td>
+          <td>
             <span >{{product[1].amount}}</span>
-          </v-flex>
-          <v-flex xs2>
+          </td>
+          <td>
             <span >{{product[1].description}}</span>
-          </v-flex>
-          <v-flex xs1>
+          </td>
+          <td>
            <v-btn flat  @click.stop="dialog = !dialog" v-on:click="onUpdate(product[0])">
             <v-icon>edit</v-icon>
              </v-btn>
-          </v-flex>
-          <v-flex xs1>
+          </td>
+          <td>
             <v-btn xs1 flat v-on:click="onDelete(product[0])" >
             <v-icon>delete</v-icon>
             </v-btn>
-             </v-flex>
-        </v-layout>
+          </td>
+          </tr>
+          </table>
 
 
 <v-dialog v-model="dialog" width="800px">
@@ -141,7 +221,8 @@ import firebase from 'firebase'
         price:'',
         description:'',
         category:'',
-        dialog: false
+        dialog: false,
+        dialogadd: false
       }
     },
     computed: {
@@ -160,10 +241,16 @@ import firebase from 'firebase'
     },
     methods:{
       onDelete: function (productid) {
+        
+      this.$toasted.show("Product Deleted").goAway(1000)
       console.log(productid)
+      this.$dialog.confirm("Delete this item?", {okText: "Delete"}).then(function(){
       var currentRef = firebase.database().ref('products/'+productid);
-      currentRef.remove()
-      this.$router.go(0);
+      currentRef.remove();
+       window.location.reload();      
+      });
+      
+      
     },
     
     onUpdate: function(productid){
@@ -180,8 +267,29 @@ import firebase from 'firebase'
       });
     },
       
+    createProduct(){
+      this.$toasted.show("Product Added").goAway(3000)
+      
+      let loader = this.$loading.show();
+      setTimeout(() => loader.hide(), 700)
+       this.$store.dispatch('createProduct', {
+        name: this.name,
+        amount: this.amount,
+        price: this.price,
+        description: this.description,
+        category: this.category
+       })
+      this.name='',
+      this.amount='',
+      this.price='',
+      this.description='',
+      this.category=''
+     
+      
+    },
     onChange: function(productid){
       console.log("test" + productid)
+      this.$toasted.show("Product Updated").goAway(1000)
       console.log(this.name + " " + this.category)
         var currentRef = firebase.database().ref('products').child(productid).set({
         title: this.name,
@@ -198,4 +306,8 @@ import firebase from 'firebase'
 </script>
 
 <style scoped>
+table, th, td {
+    border: 1px solid black;
+}
+tr:nth-child(even){background-color: #f2f2f2}
 </style>

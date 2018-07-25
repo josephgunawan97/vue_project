@@ -4,7 +4,7 @@
       app
       :clipped-left="clipped"
     >
-      <v-toolbar-title>Storage</v-toolbar-title>
+      <v-toolbar-title><router-link to="/main">Klikdaily</router-link></v-toolbar-title>
     </v-toolbar>
     <v-content>
       <router-view />
